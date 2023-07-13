@@ -1,0 +1,12 @@
+<launch>
+    <arg name="robot_name" default="robot3"/>
+    <group ns="$(arg robot_name)">
+        <!-- GUI -->
+        <node name="sendgoal_gui" pkg="medical_task" type="sendgoal_gui.py" output="screen" required="true"/>
+
+        <!-- distance audio warning -->
+        <node pkg="play_sounds" name="distance_warning" type="distance_warning.py"/>
+        
+    </group>
+
+</launch>

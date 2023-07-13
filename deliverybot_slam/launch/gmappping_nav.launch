@@ -1,0 +1,102 @@
+<launch>
+    <arg name="open_rviz" default="true" />
+
+    <arg name="robot3" default="robot3" />
+    <group ns = "$(arg robot3)">
+
+        <!-- gmapping -->
+        <include file="$(find deliverybot_slam)/launch/include/gmapping.launch.xml">
+            <arg name="scan_topic"  value="scan_filtered" /> <!-- scan_filtered   -->
+            <arg name="base_frame"  default="$(arg robot3)/base_link"/>
+            <arg name="odom_frame"  default="$(arg robot3)/odom"/>
+            
+        </include>
+        <remap from="robot3/map" to="/map"/>
+
+          <!-- AMCL -->
+        <node pkg="amcl" type="amcl" name="amcl">
+
+          <param name="min_particles"             value="500"/>
+          <param name="max_particles"             value="3000"/>
+          <param name="kld_err"                   value="0.02"/>
+          <param name="update_min_d"              value="0.20"/>
+          <param name="update_min_a"              value="0.20"/>
+          <param name="resample_interval"         value="1"/>
+          <param name="transform_tolerance"       value="0.5"/>
+          <param name="recovery_alpha_slow"       value="0.00"/>
+          <param name="recovery_alpha_fast"       value="0.00"/>
+          <param name="initial_pose_x"            value="21.5"/>
+          <param name="initial_pose_y"            value="34"/>
+          <param name="initial_pose_a"            value="-1.5"/>
+          <param name="gui_publish_rate"          value="50.0"/>
+
+          <remap from="scan"                      to="scan_filtered"/>
+          <param name="laser_max_range"           value="3.5"/>
+          <param name="laser_max_beams"           value="180"/>
+          <param name="laser_z_hit"               value="0.5"/>
+          <param name="laser_z_short"             value="0.05"/>
+          <param name="laser_z_max"               value="0.05"/>
+          <param name="laser_z_rand"              value="0.5"/>
+          <param name="laser_sigma_hit"           value="0.2"/>
+          <param name="laser_lambda_short"        value="0.1"/>
+          <param name="laser_likelihood_max_dist" value="2.0"/>
+          <param name="laser_model_type"          value="likelihood_field"/>
+
+          <param name="odom_model_type"           value="diff"/>
+          <param name="odom_alpha1"               value="0.1"/>
+          <param name="odom_alpha2"               value="0.1"/>
+          <param name="odom_alpha3"               value="0.1"/>
+          <param name="odom_alpha4"               value="0.1"/>
+          <param name="odom_frame_id"             value="/$(arg robot3)/odom"/>
+          <param name="base_frame_id"             value="/$(arg robot3)/base_footprint"/>
+
+        </node>
+
+
+
+        <!-- move_base -->
+        <!-- Arguments -->
+        <arg name="cmd_vel_topic" default="cmd_vel" />
+        <arg name="odom_topic" default="odom_ekf" />
+
+        <!-- move_base -->
+        <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+          <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+          <!-- <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/> -->
+          <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+          <!-- <param name="base_local_planner" value="eband_local_planner/EBandPlannerROS"/> -->
+          <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" /> -->
+
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/costmap_common_params.yaml" command="load" ns="global_costmap" />
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/odom/local_costmap_params.yaml" command="load" />
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/odom/global_costmap_params.yaml" command="load" />
+
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/move_base_params.yaml" command="load" />
+
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/base_local_planner_params.yaml" command="load" />
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/eband_local_planner.yaml" command="load" />
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/teb_local_planner.yaml" command="load" />
+          <rosparam file="$(find deliverybot_nav)/multi_param/multi_param3/dwa_local_planner.yaml" command="load" />
+
+          
+
+          <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+          <remap from="odom" to="$(arg odom_topic)"/>
+          
+        </node>
+  </group>
+
+
+    
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find deliverybot_slam)/rviz/gmapping.rviz"/>
+  </group>
+
+    
+</launch>

@@ -1,0 +1,13 @@
+repositories:
+  robot_pose_publisher:
+    type: git
+    url: git@github.com:GT-RAIL/robot_pose_publisher.git
+    version: develop
+  sim_world:
+    type: git
+    url: git@github.com:JosefGst/sim_world.git
+    version: main
+  urdf_basic_shapes:
+    type: git
+    url: git@github.com:JosefGst/urdf_basic_shapes.git
+    version: melodic-devel

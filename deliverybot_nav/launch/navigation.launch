@@ -1,0 +1,42 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="deliverybot"/>
+
+  <arg name="sim" default="true"/>
+  <arg name="map_file" value="$(find deliverybot_nav)/maps/tko_gazebo.yaml" />
+
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="true"/>
+  <arg name="planner" default="turtle" doc="local planner [DWA, eband, teb, teb_omni, tut]"/>
+
+  <!-- deliverybot -->
+  <include file="$(find deliverybot_bringup)/launch/remote.launch">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <include file="$(find deliverybot_nav)/launch/amcl.launch">
+    <arg name="scan_topic" value="scan_filtered" />
+    <arg name="initial_pose_x" value="-50" />
+    <arg name="initial_pose_y" value="17" />
+    <arg name="initial_pose_a" value="0" />
+  </include>
+
+  <!-- move_base -->
+  <include file="$(find deliverybot_nav)/launch/move_base_$(arg planner).launch">
+    <arg name="model" value="$(arg model)" />
+    <arg name="odom_topic" value="odom_ekf" />
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+  </include>
+
+  
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="false"
+          args="-d $(find deliverybot_nav)/rviz/$(arg planner).rviz"/>
+  </group>
+</launch>

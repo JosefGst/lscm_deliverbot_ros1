@@ -1,0 +1,8 @@
+#goal definition
+#int32 order
+---
+#result definition
+float64[] pose
+---
+#feedback
+int32[] test_sequence

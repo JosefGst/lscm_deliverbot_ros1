@@ -1,0 +1,23 @@
+<launch>
+    <arg name="open_rviz" default="true" />
+
+    <arg name="robot3" default="robot3" />
+    <group ns = "$(arg robot3)">
+
+        <!-- gmapping -->
+        <include file="$(find deliverybot_slam)/launch/include/gmapping.launch.xml">
+            <arg name="scan_topic"  value="scan_filtered" /> <!-- scan_filtered   -->
+            <arg name="base_frame"  default="$(arg robot3)/base_link"/>
+            <arg name="odom_frame"  default="$(arg robot3)/odom"/>
+        </include>
+
+    </group>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="false"
+          args="-d $(find deliverybot_slam)/rviz/gmapping.rviz"/>
+  </group>
+
+    
+</launch>

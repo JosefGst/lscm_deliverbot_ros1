@@ -1,0 +1,4 @@
+<launch>
+  <!-- NOTED: check catkin set -g flag or not-->
+  <node name="bing_multi" pkg="ada_test" type="bing_multi" launch-prefix="xterm -e gdb --args"/>
+</launch>

@@ -1,0 +1,10 @@
+<launch>
+    <include file="$(find deliverybot_bringup)/launch/bringup_multi_gui_single.launch" /> 
+    <include file="$(find deliverybot_nav)/launch/multi/multi_nav_bringup.launch" >   
+	    <arg name="map_name" value="cave"/>
+    </include>
+    <include file="$(find ros_tcp_endpoint)/launch/endpoint.launch" />
+    <!-- GUI -->
+    <include file="$(find medical_task)/launch/gui_cave.launch"/>
+</launch>
+

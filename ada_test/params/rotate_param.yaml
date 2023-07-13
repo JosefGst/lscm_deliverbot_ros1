@@ -1,0 +1,6 @@
+speed: 0.2 # radians per second
+tolerance: 3  # degrees converted to radians
+odom_angular_scale_correction: 1.0
+start_test: False
+
+#NOT IN USE

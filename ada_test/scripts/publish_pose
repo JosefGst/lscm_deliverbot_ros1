@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+import rospy
+from std_msgs.msg import String
+from geometry_msgs.msg import PoseWithCovarianceStamped
+
+def pose_publisher():
+    pub = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=1)
+    rospy.init_node('pose_publisher', anonymous=True)
+    rate = rospy.Rate(5) # 10hz
+    count = 0
+    p = PoseWithCovarianceStamped()
+
+    p.header.seq = 1
+    p.header.stamp = rospy.Time.now()
+    p.header.frame_id = "map"
+
+    p.pose.pose.position.x = 0.5
+    p.pose.pose.position.y = -0.1
+    p.pose.pose.position.z = 1.0
+    # Make sure the quaternion is valid and normalized
+    p.pose.pose.orientation.x = 0.0
+    p.pose.pose.orientation.y = 0.0
+    p.pose.pose.orientation.z = 0.0
+    p.pose.pose.orientation.w = 1.0
+    #p.covariance no need to modify?
+    while count < 5:
+        #rospy.loginfo(hello_str)
+        pub.publish(p)
+        count+=1
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        pose_publisher()
+    except rospy.ROSInterruptException:
+        pass

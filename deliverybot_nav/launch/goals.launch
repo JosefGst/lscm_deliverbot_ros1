@@ -1,0 +1,7 @@
+<launch>  
+  
+  <!-- publish wayposes -->
+  <!-- <arg name="topic_name" default="/test/topic"/> -->
+  <node pkg="rostopic" type="rostopic" name="arbitrary_name" args="pub /my_controller/command std_msgs/Float64 50" output="screen"/>
+
+</launch>

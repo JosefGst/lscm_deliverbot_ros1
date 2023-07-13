@@ -1,0 +1,8 @@
+<launch>
+<!-- still under construction -->
+    <!-- <include file="$(find whbot_navigation)/launch/nav.launch"/> -->
+    <node name="display_logo" pkg="medical_task" type="display_logo.py" output="screen"/>
+    <include file="$(find set_initialpose)/launch/set_initialpose.launch"/>
+
+
+</launch>

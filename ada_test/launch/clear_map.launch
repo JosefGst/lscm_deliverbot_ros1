@@ -1,0 +1,5 @@
+<launch>
+  <node name="recover_clear_map" pkg="ada_test" type="recover_clear_map" output="screen">
+    <param name="clearing_time" value="5.0"/>
+  </node>
+</launch>

@@ -1,0 +1,67 @@
+<launch>
+
+  <arg name="robot_name" default="robot3"/>
+  <group ns="$(arg robot_name)">
+  
+    <!-- <param name="tf_prefix" value="$(arg robot_name)" /> -->
+
+    <include file="$(find deliverybot_bringup)/launch/remote.launch">
+      <arg name="model" value="deliverybot"/>
+      <arg name="robot_name" value="$(arg robot_name)"/>
+    </include>
+
+    <!-- IMU -->
+    <include file="$(find deliverybot_bringup)/launch/wit.launch">
+      <param name="tf_prefix" value="$(arg robot_name)" />
+    </include>
+      
+
+    <!-- LIDAR -->
+    <include file="$(find deliverybot_bringup)/launch/rplidar_s1.launch">
+      <arg name="robot_name" value="$(arg robot_name)"/>
+    </include>
+    
+    <!-- SERIAL controll door-->
+    <node name="serial_connect_battery" pkg="rosserial_python" type="serial_node.py" >
+      <param name="port" value="/dev/battery"/>
+      <param name="baud" value="115200"/>
+    </node> 
+
+    <!-- SERIAL CONNECT TO ODOM AND MOTOR -->
+    <node name="serial_connect" pkg="rosserial_python" type="serial_node.py">
+      <param name="port" value="/dev/whbot"/>
+      <param name="baud" value="115200"/>
+    </node>
+
+    <node name="odom_add_time" pkg="ada_test" type="odom_add_time"/>
+
+    <!-- depth camera -->
+    <include file="$(find deliverybot_bringup)/launch/nodelet_depthcam.launch"/>
+
+    <!-- TODO translation not working -->
+    <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+      <rosparam command="load" file="$(find deliverybot_bringup)/deliverybot_ekf.yaml" />
+      <remap from="odometry/filtered" to="odom_ekf"/>
+    </node> -->
+
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <param name="output_frame" value="$(arg robot_name)/odom"/>
+      <param name="base_footprint_frame" value="$(arg robot_name)/base_footprint"/>
+      <param name="freq" value="20.0"/>
+      <param name="sensor_timeout" value="1.0"/>
+      <param name="odom_used" value="true"/>
+      <param name="imu_used" value="true"/>
+      <param name="vo_used" value="false"/>
+      <param name="debug" value="false"/>
+      <param name="self_diagnose" value="false"/>
+      <remap from="imu_data" to="wit/imu"/> 
+      <remap from="robot_pose_ekf/odom_combined" to="odom_ekf"/>
+    </node>
+
+  </group>
+
+  <!-- GUI -->
+  <include file="$(find medical_task)/launch/sendgoal_gui.launch"/>
+
+</launch>
+
